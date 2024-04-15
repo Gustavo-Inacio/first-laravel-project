@@ -13,7 +13,17 @@ class Chirp extends Model
 
     protected $fillable = [
         'message',
+        'pinned'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($chirp) {
+            $chirp->pinned = $chirp->pinned ?? false;
+        });
+    }
 
     public function user(): BelongsTo
     {

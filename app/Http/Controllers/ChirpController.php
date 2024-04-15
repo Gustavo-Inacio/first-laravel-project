@@ -16,8 +16,13 @@ class ChirpController extends Controller
      */
     public function index(): View
     {
+
+        $chirps = Chirp::with('user')->latest()->get();
+
         return view('chirps.index', [
-            'chirps' => Chirp::with('user')->latest()->get(),
+            'chirps' => $chirps,
+            'pinnedChips' => $chirps->where('pinned', true),
+            'notPinnedChirps' => $chirps->where('pinned', false),
         ]);
     }
 
@@ -79,6 +84,29 @@ class ChirpController extends Controller
  
         $chirp->update($validated);
  
+        return redirect(route('chirps.index'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function pin(Request $request, Chirp $chirp): RedirectResponse
+    {
+        Gate::authorize('update', $chirp);
+ 
+        $chirp->update(['pinned' => true]);
+        $chirp->save();
+
+        return redirect(route('chirps.index'));
+    }
+
+    public function unpin(Request $request, Chirp $chirp): RedirectResponse
+    {
+        Gate::authorize('update', $chirp);
+ 
+        $chirp->update(['pinned' => false]);
+        $chirp->save();
+
         return redirect(route('chirps.index'));
     }
 

@@ -22,4 +22,9 @@ Route::resource('chirps', ChirpController::class)
     ->only(['index', 'store', 'edit', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
 
+Route::prefix('chirps')->group(function () {
+    Route::post('{chirp}/pin', [ChirpController::class, 'pin'])->name('chirps.pin');
+    Route::post('{chirp}/unpin', [ChirpController::class, 'unpin'])->name('chirps.unpin');
+});
+
 require __DIR__.'/auth.php';
